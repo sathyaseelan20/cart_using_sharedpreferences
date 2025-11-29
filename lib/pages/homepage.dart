@@ -61,10 +61,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   int get totalItems => cart.values.fold(0, (sum, item) => sum + item.quantity);
-  int get totalPrice => cart.values.fold(
-    0,
-    (s, item) => s + (item.product.price * item.quantity),
-  );
+  int get totalPrice => cart.values.fold(0, (s, item) => s + (item.product.price * item.quantity),);
 
   void _updateQuantity(Product product, int delta) {
   setState(() {
@@ -74,7 +71,7 @@ class _HomePageState extends State<HomePage> {
       if (cart[product.id]!.quantity <= 0) {
         cart.remove(product.id);
       }
-    }
+    } 
   });
 
   saveCart();
@@ -86,6 +83,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Products"),
+        backgroundColor: const Color.fromARGB(255, 33, 243, 205),
         actions: [
           Stack(
             alignment: Alignment.center,

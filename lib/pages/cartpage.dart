@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shopping_cart/models/cart_model.dart';
 import 'package:shopping_cart/models/product_model.dart';
 
+
 class CartPage extends StatefulWidget {
   final Map<int, CartItem> cart;
   final Function(Product, int) onQuantityChanged;
@@ -23,64 +24,71 @@ class _CartPageState extends State<CartPage> {
 
   Future<void> saveCart() async {
     final prefs = await SharedPreferences.getInstance();
-    List cartList = widget.cart.values.map((c) => c.toMap()).toList();
-    prefs.setString(cartKey, jsonEncode(cartList));
+    final list = widget.cart.values.map((c) => c.toMap()).toList();
+    prefs.setString(cartKey, jsonEncode(list));
   }
-
-  int get totalPrice => widget.cart.values.fold(
-      0, (sum, item) => sum + (item.product.price * item.quantity));
 
   int get totalItems =>
       widget.cart.values.fold(0, (sum, item) => sum + item.quantity);
+
+  int get totalPrice =>
+      widget.cart.values.fold(0, (sum, item) => sum + item.quantity * item.product.price);
 
   @override
   Widget build(BuildContext context) {
     final items = widget.cart.values.toList();
 
     return Scaffold(
-      appBar: AppBar(title: Text("Your Cart")),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text("Cart Items"),
+        backgroundColor: const Color.fromARGB(255, 33, 243, 205),
+      ),
 
       body: items.isEmpty
-          ? Center(
-              child: Text(
-                "Your cart is empty",
-                style: TextStyle(fontSize: 18),
-              ),
-            )
+          ? Center(child: Text("Your cart is empty", style: TextStyle(fontSize: 18),))
           : ListView.builder(
+              padding: EdgeInsets.only(bottom: 100),
               itemCount: items.length,
               itemBuilder: (context, index) {
                 CartItem item = items[index];
 
                 return Container(
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   padding: EdgeInsets.all(10),
+                  
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+                    color: Color.fromARGB(255, 33, 243, 205),
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 4,
+                          offset: Offset(2, 2)
+                      )
+                    ],
                   ),
-
                   child: Row(
                     children: [
-          
                       Image.asset(item.product.image,
-                          height: 70, width: 70, fit: BoxFit.cover),
+                          width: 60, height: 60, fit: BoxFit.cover),
 
-                      SizedBox(width: 10),
+                      SizedBox(width: 12),
 
-                      
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              item.product.title,
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(height: 5),
+                            Text(item.product.title,
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold
+                                  )
+                                ),
+                            SizedBox(height: 4),
                             Text("₹ ${item.product.price}",
-                                style: TextStyle(fontSize: 14)),
+                                style: TextStyle(fontSize: 14)
+                            ),
                           ],
                         ),
                       ),
@@ -96,10 +104,9 @@ class _CartPageState extends State<CartPage> {
                             },
                           ),
 
-                          Text(
-                            "${item.quantity}",
-                            style: TextStyle(fontSize: 16),
-                          ),
+                          Text("${item.quantity}",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
 
                           IconButton(
                             icon: Icon(Icons.add_circle_outline),
@@ -110,7 +117,7 @@ class _CartPageState extends State<CartPage> {
                             },
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 );
@@ -119,7 +126,8 @@ class _CartPageState extends State<CartPage> {
 
       bottomNavigationBar: Container(
         padding: EdgeInsets.all(16),
-        color: Colors.grey[200],
+        height: 80,
+        color: Colors.grey.shade100,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -129,7 +137,8 @@ class _CartPageState extends State<CartPage> {
                 Text("Items: $totalItems"),
                 Text(
                   "Total: ₹ $totalPrice",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -140,7 +149,13 @@ class _CartPageState extends State<CartPage> {
                 saveCart();
                 Navigator.pop(context);
               },
-              child: Text("Checkout"),
+              child: Text("Checkout",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 1, 87, 71),
+                )
+              ),
             ),
           ],
         ),
